@@ -28,7 +28,7 @@ import {
 import { DEMO_ACCOUNT, demoPayments, demoRequests } from "@/lib/demo-data";
 import { formatUsdc, parseUsdc, resolveRecipient, textError } from "@/lib/money";
 import type { Payment } from "@/lib/types";
-import { PaymentRow, QrCode, useChainHealth } from "./ui";
+import { PaymentRow, QrCode, openWalletMenu, useChainHealth } from "./ui";
 import { useRomeWallet } from "./wallet-provider";
 
 type Tab = "send" | "receive" | "request" | "topup";
@@ -157,18 +157,7 @@ function TabButton({
 function BalanceHeader() {
   const wallet = useRomeWallet();
   const [copied, setCopied] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const shareable = wallet.activeLane === "solana" ? wallet.solanaAddress : wallet.activeAddress;
-
-  const connect = async (lane: "evm" | "solana") => {
-    setError(null);
-    try {
-      if (lane === "evm") await wallet.connectEvm();
-      else await wallet.connectSolana();
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Wallet connection failed.");
-    }
-  };
 
   const copy = async () => {
     if (!shareable) return;
@@ -182,16 +171,10 @@ function BalanceHeader() {
       <div className="balance-header">
         <span className="balance-label">Total balance</span>
         <strong className="balance-amount">— <small>USDC</small></strong>
-        <p className="balance-sub">Connect a wallet to see your balance and start sending.</p>
-        <div className="connect-row">
-          <button className="button button-primary" onClick={() => void connect("evm")}>
-            <Wallet size={16} /> Connect MetaMask
-          </button>
-          <button className="button" onClick={() => void connect("solana")}>
-            <Sparkles size={16} /> Connect Solflare
-          </button>
-        </div>
-        {error && <div className="form-error" role="alert" style={{ marginTop: 14 }}>{error}</div>}
+        <p className="balance-sub">MetaMask or Solflare. Both pay into the same Rome contract.</p>
+        <button className="button button-primary" onClick={openWalletMenu}>
+          <Wallet size={16} /> Connect wallet
+        </button>
       </div>
     );
   }

@@ -9,7 +9,7 @@ import { demoRequests } from "@/lib/demo-data";
 import { formatDate, formatUsdc, requestStatus, textError } from "@/lib/money";
 import type { PaymentRequest } from "@/lib/types";
 import { useNow } from "@/lib/use-now";
-import { AddressLink, QrCode } from "./ui";
+import { AddressLink, QrCode, openWalletMenu } from "./ui";
 import { useRomeWallet } from "./wallet-provider";
 
 const STATUS_COPY = {
@@ -72,7 +72,7 @@ export function PayRequest({ requestId }: { requestId: bigint }) {
     setError(null);
     const memoError = textError(memo, "The memo");
     if (memoError) return setError(memoError);
-    if (!wallet.activeAddress) return setError("Connect MetaMask or Solflare to pay.");
+    if (!wallet.activeAddress) return openWalletMenu();
     try {
       await wallet.executeCall(encodePayRequest(requestId, memo.trim()), undefined, request.amount);
       setRequest(await loadRequest(requestId));

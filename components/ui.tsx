@@ -3,7 +3,10 @@
 import {
   ArrowDownLeft,
   ArrowUpRight,
+  Check,
+  ChevronDown,
   CircleAlert,
+  Copy,
   LoaderCircle,
   LogOut,
   Sparkles,
@@ -42,23 +45,176 @@ export function useChainHealth() {
   return health;
 }
 
-export function SiteHeader() {
-  const wallet = useRomeWallet();
-  const [connecting, setConnecting] = useState<"evm" | "solana" | null>(null);
-  const [error, setError] = useState<string | null>(null);
+/** Opens the header wallet menu from anywhere on the page. */
+export const OPEN_WALLET_MENU = "denarius:open-wallet-menu";
 
-  const connect = async (lane: "evm" | "solana") => {
-    setError(null);
+export function openWalletMenu() {
+  window.dispatchEvent(new Event(OPEN_WALLET_MENU));
+}
+
+type Lane = "evm" | "solana";
+
+function WalletMenu({ onError }: { onError(message: string | null): void }) {
+  const wallet = useRomeWallet();
+  const [open, setOpen] = useState(false);
+  const [connecting, setConnecting] = useState<Lane | null>(null);
+  const [copied, setCopied] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const connected = Boolean(wallet.evmAddress || wallet.syntheticAddress);
+
+  useEffect(() => {
+    const show = () => setOpen(true);
+    window.addEventListener(OPEN_WALLET_MENU, show);
+    return () => window.removeEventListener(OPEN_WALLET_MENU, show);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const connect = async (lane: Lane) => {
+    onError(null);
     setConnecting(lane);
     try {
       if (lane === "evm") await wallet.connectEvm();
       else await wallet.connectSolana();
+      setOpen(false);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Wallet connection failed.");
+      onError(caught instanceof Error ? caught.message : "Wallet connection failed.");
     } finally {
       setConnecting(null);
     }
   };
+
+  const shareable = wallet.activeLane === "solana" ? wallet.solanaAddress : wallet.activeAddress;
+  const copy = async () => {
+    if (!shareable) return;
+    await navigator.clipboard.writeText(shareable);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  };
+
+  const rows: { lane: Lane; name: string; network: string; address: string | null; icon: ReactNode }[] = [
+    { lane: "evm", name: "MetaMask", network: "EVM wallet", address: wallet.evmAddress, icon: <Wallet size={16} /> },
+    {
+      lane: "solana",
+      name: "Solflare",
+      network: "Solana wallet · Devnet",
+      address: wallet.solanaAddress,
+      icon: <Sparkles size={16} />,
+    },
+  ];
+
+  return (
+    <div className="wallet-menu" ref={ref}>
+      {connected && wallet.activeLane ? (
+        <button
+          className={`wallet-trigger ${wallet.activeLane}`}
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-haspopup="menu"
+          aria-label="Wallet menu"
+        >
+          <span className={`wallet-dot ${wallet.activeLane}`} />
+          <span>{shortAddress(shareable ?? "", 4)}</span>
+          <ChevronDown size={14} />
+        </button>
+      ) : (
+        <button
+          className="button button-primary button-small"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-haspopup="menu"
+        >
+          <Wallet size={14} /> Connect wallet
+        </button>
+      )}
+
+      {open && (
+        <div className="wallet-popover" role="menu" aria-label="Choose a wallet">
+          <p className="wallet-popover-title">{connected ? "Your wallets" : "Connect a wallet"}</p>
+          {rows.map((row) => {
+            const isActive = wallet.activeLane === row.lane && row.address !== null;
+            return (
+              <div className={`wallet-option ${isActive ? "active" : ""}`} key={row.lane}>
+                {row.address ? (
+                  <button
+                    className="wallet-option-main"
+                    role="menuitemradio"
+                    aria-checked={isActive}
+                    onClick={() => {
+                      wallet.selectLane(row.lane);
+                      setOpen(false);
+                    }}
+                    aria-label={`Use ${row.name} address ${row.lane === "evm" ? row.address : wallet.syntheticAddress}`}
+                  >
+                    <span className={`wallet-option-icon ${row.lane}`}>{row.icon}</span>
+                    <span className="wallet-option-text">
+                      <strong>{row.name}</strong>
+                      <small>{shortAddress(row.address, 5)}</small>
+                    </span>
+                    {isActive && <Check size={15} className="wallet-option-check" />}
+                  </button>
+                ) : (
+                  <button
+                    className="wallet-option-main"
+                    role="menuitem"
+                    disabled={connecting !== null}
+                    onClick={() => void connect(row.lane)}
+                    aria-label={`Connect ${row.name}`}
+                  >
+                    <span className={`wallet-option-icon ${row.lane}`}>{row.icon}</span>
+                    <span className="wallet-option-text">
+                      <strong>{row.name}</strong>
+                      <small>{connecting === row.lane ? "Connecting…" : row.network}</small>
+                    </span>
+                  </button>
+                )}
+                {row.address && (
+                  <button
+                    className="wallet-option-action"
+                    onClick={row.lane === "evm" ? wallet.disconnectEvm : wallet.disconnectSolana}
+                    disabled={wallet.isBusy}
+                    aria-label={`Disconnect ${row.name}`}
+                    title={`Disconnect ${row.name}`}
+                  >
+                    <LogOut size={14} />
+                  </button>
+                )}
+              </div>
+            );
+          })}
+          {connected && wallet.activeAddress && (
+            <div className="wallet-popover-footer">
+              <button onClick={() => void copy()}>
+                {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copied" : "Copy address"}
+              </button>
+              <Link href={`/activity/${wallet.activeAddress}`} onClick={() => setOpen(false)}>
+                <ArrowUpRight size={14} /> Activity
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function SiteHeader() {
+  const wallet = useRomeWallet();
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <header className="site-header">
@@ -77,68 +233,7 @@ export function SiteHeader() {
             Rome docs
           </a>
         </nav>
-        <div className="wallet-cluster">
-          {wallet.evmAddress ? (
-            <span className="wallet-chip">
-              <button
-                className={`button button-small button-evm ${wallet.activeLane === "evm" ? "active" : ""}`}
-                onClick={() => wallet.selectLane("evm")}
-                aria-label={`Use MetaMask address ${wallet.evmAddress}`}
-                title={wallet.evmAddress}
-              >
-                <Wallet size={14} /> <span>{shortAddress(wallet.evmAddress)}</span>
-              </button>
-              <button
-                className="button button-small wallet-disconnect"
-                onClick={wallet.disconnectEvm}
-                disabled={wallet.isBusy}
-                aria-label="Disconnect MetaMask"
-                title="Disconnect MetaMask"
-              >
-                <LogOut size={13} />
-              </button>
-            </span>
-          ) : (
-            <button
-              className="button button-small"
-              disabled={connecting === "evm"}
-              onClick={() => void connect("evm")}
-              aria-label="Connect MetaMask"
-            >
-              <Wallet size={14} /> <span>{connecting === "evm" ? "Connecting…" : "MetaMask"}</span>
-            </button>
-          )}
-          {wallet.syntheticAddress ? (
-            <span className="wallet-chip">
-              <button
-                className={`button button-small button-solana ${wallet.activeLane === "solana" ? "active" : ""}`}
-                onClick={() => wallet.selectLane("solana")}
-                aria-label={`Use Solflare synthetic address ${wallet.syntheticAddress}`}
-                title={`Solana ${wallet.solanaAddress}`}
-              >
-                <Sparkles size={14} /> <span>{shortAddress(wallet.solanaAddress ?? "", 4)}</span>
-              </button>
-              <button
-                className="button button-small wallet-disconnect"
-                onClick={wallet.disconnectSolana}
-                disabled={wallet.isBusy}
-                aria-label="Disconnect Solflare"
-                title="Disconnect Solflare"
-              >
-                <LogOut size={13} />
-              </button>
-            </span>
-          ) : (
-            <button
-              className="button button-small"
-              disabled={connecting === "solana"}
-              onClick={() => void connect("solana")}
-              aria-label="Connect Solflare"
-            >
-              <Sparkles size={14} /> <span>{connecting === "solana" ? "Connecting…" : "Solflare"}</span>
-            </button>
-          )}
-        </div>
+        <WalletMenu onError={setError} />
       </div>
       {error && (
         <div className="wallet-alert" role="alert">

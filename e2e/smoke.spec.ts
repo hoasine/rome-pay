@@ -28,6 +28,12 @@ async function installMockMetaMask(page: Page) {
   }, mockEvmAccount);
 }
 
+async function connectMetaMask(page: Page) {
+  await page.getByRole("banner").getByRole("button", { name: "Connect wallet" }).click();
+  await page.getByRole("menuitem", { name: "Connect MetaMask" }).click();
+  await expect(page.getByRole("button", { name: "Wallet menu" })).toBeVisible();
+}
+
 test("home explains the product and shows recent payments", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Send USDC to any wallet");
@@ -50,8 +56,7 @@ test("the send form resolves EVM and Solana recipients", async ({ page }) => {
 test("sending validates input and stays read-only in preview", async ({ page }) => {
   await installMockMetaMask(page);
   await page.goto("/");
-  await page.getByRole("banner").getByRole("button", { name: "Connect MetaMask" }).click();
-  await expect(page.getByRole("button", { name: `Use MetaMask address ${mockEvmAccount}` })).toBeVisible();
+  await connectMetaMask(page);
 
   const send = page.locator("#send");
   await send.getByPlaceholder("0x… or a Solana address").fill(solanaAddress);
@@ -68,7 +73,8 @@ test("the wallet panel shows tabs, the receive QR, and locks top-up for EVM", as
   await installMockMetaMask(page);
   await page.goto("/");
   const panel = page.getByRole("region", { name: "Wallet" });
-  await panel.getByRole("button", { name: "Connect MetaMask" }).click();
+  await panel.getByRole("button", { name: "Connect wallet" }).click();
+  await page.getByRole("menuitem", { name: "Connect MetaMask" }).click();
   await expect(panel.getByText("MetaMask", { exact: true })).toBeVisible();
   await expect(panel.getByRole("tab", { name: "Top up" })).toBeDisabled();
 
@@ -107,12 +113,24 @@ test("activity pages accept EVM and Solana addresses", async ({ page }) => {
   await expect(page.getByText("This page could not be found.")).toBeVisible();
 });
 
-test("a connected MetaMask wallet can be disconnected", async ({ page }) => {
+test("the wallet menu switches, copies, and disconnects in one place", async ({ page }) => {
   await installMockMetaMask(page);
   await page.goto("/");
-  await page.getByRole("banner").getByRole("button", { name: "Connect MetaMask" }).click();
+  await connectMetaMask(page);
+
+  await page.getByRole("button", { name: "Wallet menu" }).click();
+  const menu = page.getByRole("menu", { name: "Choose a wallet" });
+  await expect(menu.getByRole("menuitemradio", { name: `Use MetaMask address ${mockEvmAccount}` })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await expect(menu.getByRole("menuitem", { name: "Connect Solflare" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(menu).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Wallet menu" }).click();
   await page.getByRole("button", { name: "Disconnect MetaMask" }).click();
-  await expect(page.getByRole("banner").getByRole("button", { name: "Connect MetaMask" })).toBeVisible();
+  await expect(page.getByRole("banner").getByRole("button", { name: "Connect wallet" })).toBeVisible();
 });
 
 test("responses carry security headers", async ({ request }) => {
