@@ -8,7 +8,7 @@ const paymentComponents = [
   { name: "createdAt", type: "uint64" },
 ] as const;
 
-export const denariusAbi = [
+export const romePayAbi = [
   {
     type: "function",
     name: "paymentCount",

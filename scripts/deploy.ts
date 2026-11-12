@@ -20,18 +20,18 @@ async function main() {
   console.log(`Deployer: ${deployer.account.address} (${formatEther(balance)} gas)`);
   if (balance === 0n) throw new Error(`The deployer has no ${networkName} gas balance.`);
 
-  const { contract: denarius, deploymentTransaction } =
-    await viem.sendDeploymentTransaction("Denarius");
+  const { contract: romepay, deploymentTransaction } =
+    await viem.sendDeploymentTransaction("RomePay");
   const receipt = await client.waitForTransactionReceipt({ hash: deploymentTransaction.hash });
   if (receipt.status !== "success") throw new Error("Deployment transaction reverted");
-  const code = await client.getCode({ address: denarius.address });
+  const code = await client.getCode({ address: romepay.address });
   if (!code) throw new Error("Deployment completed without bytecode");
 
   const explorer = explorers[networkName] ?? explorers.hadrian;
-  console.log(`Denarius deployed: ${denarius.address}`);
+  console.log(`RomePay deployed: ${romepay.address}`);
   console.log(`Deployment transaction: ${deploymentTransaction.hash}`);
-  console.log(`Explorer: ${explorer}/address/${denarius.address}`);
-  console.log(`NEXT_PUBLIC_DENARIUS_ADDRESS=${denarius.address}`);
+  console.log(`Explorer: ${explorer}/address/${romepay.address}`);
+  console.log(`NEXT_PUBLIC_ROMEPAY_ADDRESS=${romepay.address}`);
 
   await mkdir("deployments", { recursive: true });
   await writeFile(
@@ -39,7 +39,7 @@ async function main() {
     `${JSON.stringify(
       {
         chainId,
-        denarius: denarius.address,
+        romepay: romepay.address,
         deploymentTransaction: deploymentTransaction.hash,
         deployer: deployer.account.address,
         deployedAt: new Date().toISOString(),

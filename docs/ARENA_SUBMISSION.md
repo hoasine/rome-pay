@@ -1,8 +1,8 @@
-# Denarius — Arena submission
+# RomePay — Arena submission
 
 ## App name
 
-Denarius
+RomePay
 
 ## One line
 
@@ -40,8 +40,8 @@ Rome lets a Solana wallet control an EVM address derived from its public key and
 
 ## Links
 
-- Website: `https://rome-denarius.vercel.app`
-- GitHub: `https://github.com/hoasine/rome-denarius`
+- Website: `https://rome-pay.vercel.app`
+- GitHub: `https://github.com/hoasine/rome-pay`
 - X: `https://x.com/HoaTranRom`
 - Contract: `ADD_CONTRACT_ADDRESS`
 - Deployment transaction (for "Link a contract"): `ADD_DEPLOY_TX`
@@ -52,7 +52,7 @@ Rome lets a Solana wallet control an EVM address derived from its public key and
 What is the grant for:
 
 ```
-Make Denarius the simplest way to pay across EVM and Solana wallets on Rome, in three milestones:
+Make RomePay the simplest way to pay across EVM and Solana wallets on Rome, in three milestones:
 
 1. Rubicon launch (2 weeks): deploy and verify on Rubicon, switch to a Solana mainnet RPC, and test top-up, send, and request flows from both wallets end to end.
 
@@ -63,4 +63,4 @@ Make Denarius the simplest way to pay across EVM and Solana wallets on Rome, in 
 Funds cover Rubicon gas, gas sponsorship, a paid Solana mainnet RPC, an audit of the payment contract before mainnet volume, and development time.
 ```
 
-Does your app hold user funds: No. Denarius forwards every payment in the same transaction and holds nothing between calls.
+Does your app hold user funds: No. RomePay forwards every payment in the same transaction and holds nothing between calls.

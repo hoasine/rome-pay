@@ -25,7 +25,7 @@ import {
 } from "react";
 import { getAddress, type Address, type Hex } from "viem";
 import {
-  DENARIUS_ADDRESS,
+  ROMEPAY_ADDRESS,
   ROME_PROGRAM_ID,
   SOLANA_RPC,
   hadrian,
@@ -230,7 +230,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       throw new Error(
         detected.length
           ? `Solflare was not detected. Available wallets: ${detected.join(", ")}.`
-          : "Solflare did not respond. Unlock it, allow the extension on this site, then reload Denarius.",
+          : "Solflare did not respond. Unlock it, allow the extension on this site, then reload RomePay.",
       );
     }
 
@@ -339,9 +339,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const executeCall = useCallback(
     async (data: Hex, target?: Address, value?: bigint): Promise<void> => {
-      const destination = target ?? DENARIUS_ADDRESS;
+      const destination = target ?? ROMEPAY_ADDRESS;
       if (!destination) {
-        throw new Error("Preview mode is read-only. Deploy Denarius and configure its address first.");
+        throw new Error("Preview mode is read-only. Deploy RomePay and configure its address first.");
       }
       if (busyRef.current) {
         throw new Error("Another transaction is already in progress.");

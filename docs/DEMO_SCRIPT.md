@@ -1,10 +1,10 @@
-# Denarius demo script
+# RomePay demo script
 
 Target length: about 2 minutes.
 
 ## Preparation
 
-1. Open the deployed Denarius app.
+1. Open the deployed RomePay app.
 2. Have MetaMask on Rome Hadrian with a few test USDC, and Solflare on Devnet with a little devnet SOL and devnet USDC.
 3. Copy your Solflare address.
 
@@ -12,7 +12,7 @@ Target length: about 2 minutes.
 
 ### 1. The idea (15 s)
 
-"Denarius is one payment app for both wallet worlds. MetaMask and Solflare users pay each other in USDC through one contract on Rome."
+"RomePay is one payment app for both wallet worlds. MetaMask and Solflare users pay each other in USDC through one contract on Rome."
 
 ### 2. Pay a Solana wallet from MetaMask (35 s)
 

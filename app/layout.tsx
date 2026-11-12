@@ -16,7 +16,7 @@ const caslon = Libre_Caslon_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Denarius - Send USDC to any wallet on Rome",
+  title: "RomePay - Send USDC to any wallet on Rome",
   description:
     "Send USDC on Rome from MetaMask or Solflare to any EVM address or Solana wallet, with payment requests and on-chain receipts.",
 };

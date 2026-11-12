@@ -19,15 +19,15 @@ export const ROME_PROGRAM_ID = "RPTWwELXAY4KC9ZPHhaxp7Sq1hHtU3HNEgLbSegCcWf";
 export const SOLANA_RPC =
   process.env.NEXT_PUBLIC_SOLANA_RPC ?? "https://api.devnet.solana.com";
 
-const configuredAddress = process.env.NEXT_PUBLIC_DENARIUS_ADDRESS?.trim();
+const configuredAddress = process.env.NEXT_PUBLIC_ROMEPAY_ADDRESS?.trim();
 
-export const DENARIUS_ADDRESS: Address | null =
+export const ROMEPAY_ADDRESS: Address | null =
   configuredAddress && isAddress(configuredAddress)
     ? getAddress(configuredAddress)
     : null;
 
 export const VIA_BASE_URL = "https://via-hadrian.testnet.romeprotocol.xyz";
-export const isPreviewMode = DENARIUS_ADDRESS === null;
+export const isPreviewMode = ROMEPAY_ADDRESS === null;
 
 export function shortAddress(address: string, size = 5) {
   if (address.length <= size * 2 + 3) return address;

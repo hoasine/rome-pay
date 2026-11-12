@@ -52,7 +52,7 @@ export function PayRequest({ requestId }: { requestId: bigint }) {
         <div className="claim-card">
           <h1>Request not found.</h1>
           <p className="detail-description">Payment request #{requestId.toString()} does not exist on this contract.</p>
-          <Link className="button" href="/"><ArrowLeft size={15} /> Back to Denarius</Link>
+          <Link className="button" href="/"><ArrowLeft size={15} /> Back to RomePay</Link>
         </div>
       </main>
     );
@@ -101,7 +101,7 @@ export function PayRequest({ requestId }: { requestId: bigint }) {
   return (
     <main className="shell detail">
       <div>
-        <Link className="back-link" href="/"><ArrowLeft size={15} /> Denarius</Link>
+        <Link className="back-link" href="/"><ArrowLeft size={15} /> RomePay</Link>
         <p className="eyebrow">Payment request #{request.id.toString()}</p>
         <h1>
           {formatUsdc(request.amount, 6)} <span className="unit">USDC</span>

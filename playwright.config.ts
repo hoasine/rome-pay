@@ -26,7 +26,7 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 300_000,
     env: {
-      NEXT_PUBLIC_DENARIUS_ADDRESS: "",
+      NEXT_PUBLIC_ROMEPAY_ADDRESS: "",
     },
   },
 });

@@ -10,8 +10,8 @@
   --line-strong: #d2dae7;
   --ink: #0f172a;
   --muted: #64748b;
-  --primary: #1d3461;
-  --primary-strong: #24407a;
+  --primary: #2160f3;
+  --primary-strong: #1a4fd6;
   --gold: #b7862c;
   --gold-strong: #d9a441;
   --gold-ink: #ffffff;
@@ -46,7 +46,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(60rem 32rem at 85% -10%, rgba(217, 164, 65, 0.12), transparent 60%),
+    radial-gradient(60rem 32rem at 85% -10%, rgba(76, 141, 255, 0.12), transparent 60%),
     radial-gradient(50rem 30rem at -10% 20%, rgba(122, 76, 245, 0.06), transparent 60%),
     var(--bg);
   color: var(--ink);
@@ -467,7 +467,7 @@ code {
   padding: 28px 28px 22px;
   border-bottom: 1px solid var(--line);
   background:
-    radial-gradient(28rem 12rem at 100% 0%, rgba(217, 164, 65, 0.16), transparent 70%),
+    radial-gradient(28rem 12rem at 100% 0%, rgba(76, 141, 255, 0.14), transparent 70%),
     transparent;
 }
 
@@ -654,7 +654,7 @@ code {
 .field input:focus,
 .field select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(29, 52, 97, 0.12);
+  box-shadow: 0 0 0 3px rgba(33, 96, 243, 0.16);
 }
 
 .field-row {
@@ -673,7 +673,7 @@ code {
 
 .amount-input:focus-within {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(29, 52, 97, 0.12);
+  box-shadow: 0 0 0 3px rgba(33, 96, 243, 0.16);
 }
 
 .field .amount-input input {
@@ -1007,6 +1007,11 @@ code {
 .feature-icon.evm {
   background: var(--evm-soft);
   color: var(--evm);
+}
+
+.feature-icon.primary {
+  background: rgba(33, 96, 243, 0.1);
+  color: var(--primary);
 }
 
 .feature-icon.gold {

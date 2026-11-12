@@ -1,6 +1,6 @@
 import { createPublicClient, encodeFunctionData, http, type Address, type Hex } from "viem";
-import { denariusAbi } from "./abi";
-import { DENARIUS_ADDRESS, hadrian } from "./config";
+import { romePayAbi } from "./abi";
+import { ROMEPAY_ADDRESS, hadrian } from "./config";
 import type { Payment, PaymentRequest } from "./types";
 
 export const publicClient = createPublicClient({
@@ -11,10 +11,10 @@ export const publicClient = createPublicClient({
 export const PAGE_SIZE = 25;
 
 function requireContract() {
-  if (!DENARIUS_ADDRESS) {
-    throw new Error("Denarius is running in preview mode. Configure NEXT_PUBLIC_DENARIUS_ADDRESS.");
+  if (!ROMEPAY_ADDRESS) {
+    throw new Error("RomePay is running in preview mode. Configure NEXT_PUBLIC_ROMEPAY_ADDRESS.");
   }
-  return DENARIUS_ADDRESS;
+  return ROMEPAY_ADDRESS;
 }
 
 type RawPayment = {
@@ -42,7 +42,7 @@ export function toPayment(raw: RawPayment): Payment {
 export async function loadPayments(account: Address, offset = 0): Promise<Payment[]> {
   const raw = await publicClient.readContract({
     address: requireContract(),
-    abi: denariusAbi,
+    abi: romePayAbi,
     functionName: "paymentsOf",
     args: [account, BigInt(offset), BigInt(PAGE_SIZE)],
   });
@@ -51,11 +51,11 @@ export async function loadPayments(account: Address, offset = 0): Promise<Paymen
 
 export async function loadRecentPayments(limit = 8): Promise<Payment[]> {
   const address = requireContract();
-  const count = Number(await publicClient.readContract({ address, abi: denariusAbi, functionName: "paymentCount" }));
+  const count = Number(await publicClient.readContract({ address, abi: romePayAbi, functionName: "paymentCount" }));
   const ids = Array.from({ length: Math.min(limit, count) }, (_, index) => BigInt(count - index));
   return Promise.all(
     ids.map(async (id) =>
-      toPayment(await publicClient.readContract({ address, abi: denariusAbi, functionName: "getPayment", args: [id] })),
+      toPayment(await publicClient.readContract({ address, abi: romePayAbi, functionName: "getPayment", args: [id] })),
     ),
   );
 }
@@ -63,8 +63,8 @@ export async function loadRecentPayments(limit = 8): Promise<Payment[]> {
 export async function loadStats() {
   const address = requireContract();
   const [payments, requests] = await Promise.all([
-    publicClient.readContract({ address, abi: denariusAbi, functionName: "paymentCount" }),
-    publicClient.readContract({ address, abi: denariusAbi, functionName: "requestCount" }),
+    publicClient.readContract({ address, abi: romePayAbi, functionName: "paymentCount" }),
+    publicClient.readContract({ address, abi: romePayAbi, functionName: "requestCount" }),
   ]);
   return { payments: Number(payments), requests: Number(requests) };
 }
@@ -72,7 +72,7 @@ export async function loadStats() {
 export async function loadRequest(id: bigint): Promise<PaymentRequest> {
   const raw = await publicClient.readContract({
     address: requireContract(),
-    abi: denariusAbi,
+    abi: romePayAbi,
     functionName: "getRequest",
     args: [id],
   });
@@ -90,7 +90,7 @@ export async function loadRequest(id: bigint): Promise<PaymentRequest> {
 
 export async function findRequestId(recipient: Address, amount: bigint, note: string) {
   const address = requireContract();
-  const count = await publicClient.readContract({ address, abi: denariusAbi, functionName: "requestCount" });
+  const count = await publicClient.readContract({ address, abi: romePayAbi, functionName: "requestCount" });
   for (let id = count; id > 0n && id > count - 10n; id--) {
     const request = await loadRequest(id);
     if (
@@ -105,21 +105,21 @@ export async function findRequestId(recipient: Address, amount: bigint, note: st
 }
 
 export function encodePay(to: Address, memo: string): Hex {
-  return encodeFunctionData({ abi: denariusAbi, functionName: "pay", args: [to, memo] });
+  return encodeFunctionData({ abi: romePayAbi, functionName: "pay", args: [to, memo] });
 }
 
 export function encodeCreateRequest(amount: bigint, note: string, expiresAt: number): Hex {
   return encodeFunctionData({
-    abi: denariusAbi,
+    abi: romePayAbi,
     functionName: "createRequest",
     args: [amount, note, BigInt(expiresAt)],
   });
 }
 
 export function encodePayRequest(requestId: bigint, memo: string): Hex {
-  return encodeFunctionData({ abi: denariusAbi, functionName: "payRequest", args: [requestId, memo] });
+  return encodeFunctionData({ abi: romePayAbi, functionName: "payRequest", args: [requestId, memo] });
 }
 
 export function encodeCancelRequest(requestId: bigint): Hex {
-  return encodeFunctionData({ abi: denariusAbi, functionName: "cancelRequest", args: [requestId] });
+  return encodeFunctionData({ abi: romePayAbi, functionName: "cancelRequest", args: [requestId] });
 }

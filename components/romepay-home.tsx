@@ -2,21 +2,22 @@
 
 import {
   ArrowDownLeft,
+  ArrowDownToLine,
   ArrowUpRight,
   Check,
   Copy,
-  Link2,
+  FileText,
   LoaderCircle,
   Plus,
   ReceiptText,
   Send,
-  Sparkles,
+  ShieldCheck,
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import { DENARIUS_ADDRESS, VIA_BASE_URL, isPreviewMode, shortAddress } from "@/lib/config";
+import { ROMEPAY_ADDRESS, VIA_BASE_URL, isPreviewMode, shortAddress } from "@/lib/config";
 import {
   encodeCreateRequest,
   encodePay,
@@ -28,6 +29,7 @@ import {
 import { DEMO_ACCOUNT, demoPayments, demoRequests } from "@/lib/demo-data";
 import { formatUsdc, parseUsdc, resolveRecipient, textError } from "@/lib/money";
 import type { Payment } from "@/lib/types";
+import { EvmMark, SolanaMark } from "./brand-icons";
 import { PaymentRow, QrCode, openWalletMenu, useChainHealth } from "./ui";
 import { useRomeWallet } from "./wallet-provider";
 
@@ -40,7 +42,7 @@ const EXPIRIES = [
   { label: "30 days", seconds: 30 * 86400 },
 ] as const;
 
-export function DenariusHome() {
+export function RomePayHome() {
   const wallet = useRomeWallet();
   const health = useChainHealth();
   const [tab, setTab] = useState<Tab>("send");
@@ -68,14 +70,14 @@ export function DenariusHome() {
         <section className="wallet-panel" aria-label="Wallet">
           <BalanceHeader />
           <div className="action-tabs" role="tablist" aria-label="Wallet actions">
-            <TabButton id="send" active={activeTab} onSelect={setTab} icon={<Send size={18} />} label="Send" />
+            <TabButton id="send" active={activeTab} onSelect={setTab} icon={<ArrowUpRight size={19} />} label="Send" />
             <TabButton id="receive" active={activeTab} onSelect={setTab} icon={<ArrowDownLeft size={18} />} label="Receive" />
-            <TabButton id="request" active={activeTab} onSelect={setTab} icon={<Link2 size={18} />} label="Request" />
+            <TabButton id="request" active={activeTab} onSelect={setTab} icon={<FileText size={18} />} label="Request" />
             <TabButton
               id="topup"
               active={activeTab}
               onSelect={setTab}
-              icon={<Sparkles size={18} />}
+              icon={<ArrowDownToLine size={18} />}
               label="Top up"
               disabled={wallet.activeLane !== "solana"}
               hint="Connect Solflare to top up from Solana"
@@ -92,26 +94,26 @@ export function DenariusHome() {
         <ActivityPanel refreshKey={refreshKey} />
       </div>
 
-      <section className="feature-strip" id="how-it-works" aria-label="How Denarius works">
+      <section className="feature-strip" id="how-it-works" aria-label="How RomePay works">
         <article>
-          <span className="feature-icon solana"><Sparkles size={18} /></span>
+          <span className="feature-icon solana"><SolanaMark size={18} /></span>
           <h3>Pay Solana wallets</h3>
-          <p>Paste a Solana address. Denarius pays the Rome address that wallet controls, keccak256(pubkey)[12:].</p>
+          <p>Paste a Solana address. RomePay pays the Rome address that wallet controls, keccak256(pubkey)[12:].</p>
         </article>
         <article>
-          <span className="feature-icon evm"><Wallet size={18} /></span>
+          <span className="feature-icon gold"><ArrowDownToLine size={18} /></span>
           <h3>Spend from Solflare</h3>
           <p>Solana users top up from their own devnet USDC and send through Rome without ever creating an EVM key.</p>
         </article>
         <article>
-          <span className="feature-icon gold"><ReceiptText size={18} /></span>
+          <span className="feature-icon primary"><ShieldCheck size={18} /></span>
           <h3>One ledger</h3>
           <p>
             Payments, memos, and requests live in one contract
-            {DENARIUS_ADDRESS ? (
+            {ROMEPAY_ADDRESS ? (
               <>
                 {" · "}
-                <a href={`${VIA_BASE_URL}/address/${DENARIUS_ADDRESS}`} target="_blank" rel="noreferrer">verify on Via</a>
+                <a href={`${VIA_BASE_URL}/address/${ROMEPAY_ADDRESS}`} target="_blank" rel="noreferrer">verify on Via</a>
               </>
             ) : null}
             .
@@ -184,7 +186,7 @@ function BalanceHeader() {
       <div className="balance-top">
         <span className="balance-label">Total balance</span>
         <span className={`lane-badge ${wallet.activeLane}`}>
-          {wallet.activeLane === "solana" ? <Sparkles size={12} /> : <Wallet size={12} />}
+          {wallet.activeLane === "solana" ? <SolanaMark size={12} /> : <EvmMark size={12} />}
           {wallet.activeLane === "solana" ? "Solflare" : "MetaMask"}
         </span>
       </div>
@@ -299,7 +301,7 @@ function ReceivePanel() {
       <div>
         <p className="tab-hint">
           {wallet.activeLane === "solana"
-            ? "Share your Solana address. Denarius senders pay the Rome address it controls, and you spend it from Solflare."
+            ? "Share your Solana address. RomePay senders pay the Rome address it controls, and you spend it from Solflare."
             : "Share your MetaMask address on Rome Hadrian."}
         </p>
         <code className="address-full">{shareable}</code>
@@ -405,7 +407,7 @@ function TopUpForm({ onDone }: { onDone(): void }) {
       </label>
       {error && <div className="form-error" role="alert">{error}</div>}
       <button className="button button-primary button-large button-block" disabled={wallet.isBusy}>
-        <Sparkles size={16} /> {wallet.isBusy ? "Waiting for Solflare…" : "Top up from Solflare"}
+        <ArrowDownToLine size={16} /> {wallet.isBusy ? "Waiting for Solflare…" : "Top up from Solflare"}
       </button>
     </form>
   );
@@ -434,7 +436,7 @@ function ActivityPanel({ refreshKey }: { refreshKey: number }) {
         setError(null);
       })
       .catch((caught: unknown) => {
-        if (!cancelled) setError(caught instanceof Error ? caught.message : "Could not read Denarius from Hadrian.");
+        if (!cancelled) setError(caught instanceof Error ? caught.message : "Could not read RomePay from Hadrian.");
       });
     return () => {
       cancelled = true;

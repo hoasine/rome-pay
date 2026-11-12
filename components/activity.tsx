@@ -69,7 +69,7 @@ export function Activity({ address, solanaAddress }: { address: Address; solanaA
           <p className="detail-description">
             {solanaAddress
               ? `Controlled from Solflare at Rome address ${shortAddress(address)}.`
-              : "Payments sent and received through Denarius."}
+              : "Payments sent and received through RomePay."}
           </p>
         </div>
         <button className="button" onClick={() => void copy()}>

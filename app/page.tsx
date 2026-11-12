@@ -1,5 +1,5 @@
-import { DenariusHome } from "@/components/denarius-home";
+import { RomePayHome } from "@/components/romepay-home";
 
 export default function Home() {
-  return <DenariusHome />;
+  return <RomePayHome />;
 }

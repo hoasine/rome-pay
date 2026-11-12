@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-interface IDenarius {
+interface IRomePay {
     function pay(address to, string calldata memo) external payable returns (uint256);
 }
 
@@ -14,15 +14,15 @@ contract RejectingReceiver {
 
 /// @dev Test-only recipient that tries to pay again from inside the transfer.
 contract ReentrantReceiver {
-    IDenarius public immutable denarius;
+    IRomePay public immutable romepay;
     address public immutable target;
 
-    constructor(address denariusAddress, address targetAddress) payable {
-        denarius = IDenarius(denariusAddress);
+    constructor(address romepayAddress, address targetAddress) payable {
+        romepay = IRomePay(romepayAddress);
         target = targetAddress;
     }
 
     receive() external payable {
-        denarius.pay{value: msg.value}(target, "re-enter");
+        romepay.pay{value: msg.value}(target, "re-enter");
     }
 }

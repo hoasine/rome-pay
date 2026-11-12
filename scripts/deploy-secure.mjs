@@ -53,7 +53,7 @@ const sourcify = isMainnet
   ? "https://verify.mainnet.romeprotocol.xyz"
   : "https://verify.testnet.romeprotocol.xyz";
 
-console.log(isDeployment ? `Denarius ${network} deployment` : `Denarius ${network}: ${script}`);
+console.log(isDeployment ? `RomePay ${network} deployment` : `RomePay ${network}: ${script}`);
 console.log(
   isMainnet
     ? "Rubicon is MAINNET: gas is real USDC. Paste the private key of the funded deployer. Input is hidden."
@@ -85,10 +85,10 @@ try {
     process.exitCode = result.status ?? 1;
   } else if (isDeployment) {
     const deployment = JSON.parse(readFileSync(`deployments/${network}.json`, "utf8"));
-    console.log("\nVerifying Denarius on Sourcify…");
+    console.log("\nVerifying RomePay on Sourcify…");
     const verify = spawnSync(
       process.execPath,
-      [hardhatCli, "--network", network, "verify", deployment.denarius],
+      [hardhatCli, "--network", network, "verify", deployment.romepay],
       {
         cwd: process.cwd(),
         env: { ...process.env, SOURCIFY_URL: sourcify },
@@ -98,7 +98,7 @@ try {
     if (verify.status !== 0) {
       console.log("Verification can be retried without a private key:");
       console.log(
-        `$env:SOURCIFY_URL="${sourcify}"; npx hardhat verify --network ${network} ${deployment.denarius}`,
+        `$env:SOURCIFY_URL="${sourcify}"; npx hardhat verify --network ${network} ${deployment.romepay}`,
       );
     }
   }

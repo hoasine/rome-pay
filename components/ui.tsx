@@ -9,7 +9,7 @@ import {
   Copy,
   LoaderCircle,
   LogOut,
-  Sparkles,
+  CircleCheck,
   Wallet,
   X,
 } from "lucide-react";
@@ -22,6 +22,7 @@ import { VIA_BASE_URL, shortAddress } from "@/lib/config";
 import { publicClient } from "@/lib/contract";
 import { formatDate, formatUsdc } from "@/lib/money";
 import type { Payment } from "@/lib/types";
+import { EvmMark, SolanaMark } from "./brand-icons";
 import { useRomeWallet } from "./wallet-provider";
 
 export function useChainHealth() {
@@ -46,7 +47,7 @@ export function useChainHealth() {
 }
 
 /** Opens the header wallet menu from anywhere on the page. */
-export const OPEN_WALLET_MENU = "denarius:open-wallet-menu";
+export const OPEN_WALLET_MENU = "romepay:open-wallet-menu";
 
 export function openWalletMenu() {
   window.dispatchEvent(new Event(OPEN_WALLET_MENU));
@@ -107,13 +108,13 @@ function WalletMenu({ onError }: { onError(message: string | null): void }) {
   };
 
   const rows: { lane: Lane; name: string; network: string; address: string | null; icon: ReactNode }[] = [
-    { lane: "evm", name: "MetaMask", network: "EVM wallet", address: wallet.evmAddress, icon: <Wallet size={16} /> },
+    { lane: "evm", name: "MetaMask", network: "EVM wallet", address: wallet.evmAddress, icon: <EvmMark size={17} /> },
     {
       lane: "solana",
       name: "Solflare",
       network: "Solana wallet · Devnet",
       address: wallet.solanaAddress,
-      icon: <Sparkles size={16} />,
+      icon: <SolanaMark size={17} />,
     },
   ];
 
@@ -220,8 +221,8 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="shell header-inner">
         <Link className="brand" href="/">
-          <Image src="/denarius-mark.svg" alt="" width={34} height={34} priority />
-          Denarius
+          <Image src="/romepay-mark.svg" alt="" width={34} height={34} priority />
+          RomePay
         </Link>
         <nav className="nav" aria-label="Primary navigation">
           <Link href="/">Wallet</Link>
@@ -248,8 +249,8 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="shell footer-inner">
-        <span>Denarius · USDC for both wallet worlds · built on Rome Hadrian</span>
-        <a href="https://github.com/hoasine/rome-denarius" target="_blank" rel="noreferrer">
+        <span>RomePay · USDC for both wallet worlds · built on Rome Hadrian</span>
+        <a href="https://github.com/hoasine/rome-pay" target="_blank" rel="noreferrer">
           Source on GitHub
         </a>
       </div>
@@ -365,7 +366,7 @@ export function TransactionToast() {
       {state.status === "error" ? (
         <CircleAlert size={18} />
       ) : state.status === "success" ? (
-        <Sparkles size={18} />
+        <CircleCheck size={18} />
       ) : (
         <LoaderCircle size={18} className="spin" />
       )}

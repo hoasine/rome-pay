@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-/// @title Denarius
+/// @title RomePay
 /// @notice Send Rome's native USDC to any EVM address or Solana wallet, with memos,
 ///         one-time payment requests, and an on-chain history per address.
 /// @dev A Solana wallet is paid at its Rome synthetic address, keccak256(pubkey)[12:],
 ///      which the wallet controls from Solflare without an EVM key. The contract never
 ///      holds funds after a call: every payment is forwarded in the same transaction.
-contract Denarius {
+contract RomePay {
     uint256 public constant MAX_PAGE_SIZE = 25;
     uint256 public constant MAX_TEXT_BYTES = 140;
     uint64 public constant MAX_REQUEST_DURATION = 90 days;
