@@ -4,7 +4,10 @@ RomePay sends Rome's native USDC from MetaMask or Solflare to any EVM address or
 
 ![CI](https://github.com/hoasine/rome-pay/actions/workflows/check.yml/badge.svg)
 
-Live app: https://romepay-usdc.vercel.app
+## Live deployment
+
+- App: https://romepay-usdc.vercel.app
+- RomePay contract: `0x2BB32530e30cFbfb105B4f44C982e0C065e1453f` ([explorer](https://via-hadrian.testnet.romeprotocol.xyz/address/0x2BB32530e30cFbfb105B4f44C982e0C065e1453f), [verified source](https://verify.testnet.romeprotocol.xyz/repo-ui/200010/0x2BB32530e30cFbfb105B4f44C982e0C065e1453f))
 
 ## Why it needs Rome
 
