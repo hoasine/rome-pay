@@ -4,6 +4,8 @@ RomePay sends Rome's native USDC from MetaMask or Solflare to any EVM address or
 
 ![CI](https://github.com/hoasine/rome-pay/actions/workflows/check.yml/badge.svg)
 
+Live app: https://romepay-usdc.vercel.app
+
 ## Why it needs Rome
 
 - **Solana recipients.** Rome derives each Solana wallet's EVM address as `keccak256(pubkey)[12:]` and lets that wallet sign for it from Solflare. RomePay resolves a pasted Solana address with the Rome SDK's `syntheticAddress` and pays it like any other address.

@@ -40,7 +40,7 @@ Rome lets a Solana wallet control an EVM address derived from its public key and
 
 ## Links
 
-- Website: `https://rome-pay.vercel.app`
+- Website: `https://romepay-usdc.vercel.app`
 - GitHub: `https://github.com/hoasine/rome-pay`
 - X: `https://x.com/HoaTranRom`
 - Contract: `ADD_CONTRACT_ADDRESS`
