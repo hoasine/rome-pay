@@ -30,7 +30,7 @@ async function installMockMetaMask(page: Page) {
 
 test("home explains the product and shows recent payments", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Send USDC.");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Send USDC to any wallet");
   await expect(page.getByTestId("network-health")).toContainText("Preview");
   await expect(page.locator(".payment-list .payment-row")).toHaveCount(3);
   await expect(page.getByText("gm from Solana")).toBeVisible();
@@ -50,18 +50,34 @@ test("the send form resolves EVM and Solana recipients", async ({ page }) => {
 test("sending validates input and stays read-only in preview", async ({ page }) => {
   await installMockMetaMask(page);
   await page.goto("/");
-  await page.getByRole("button", { name: "Connect MetaMask" }).click();
+  await page.getByRole("banner").getByRole("button", { name: "Connect MetaMask" }).click();
   await expect(page.getByRole("button", { name: `Use MetaMask address ${mockEvmAccount}` })).toBeVisible();
 
   const send = page.locator("#send");
   await send.getByPlaceholder("0x… or a Solana address").fill(solanaAddress);
-  await send.getByPlaceholder("10.00").fill("1.1234567");
+  await send.getByPlaceholder("0.00").fill("1.1234567");
   await send.getByRole("button", { name: "Send USDC" }).click();
   await expect(send.locator(".form-error")).toContainText("6 decimals");
 
-  await send.getByPlaceholder("10.00").fill("2.5");
+  await send.getByPlaceholder("0.00").fill("2.5");
   await send.getByRole("button", { name: "Send USDC" }).click();
   await expect(send.locator(".form-error")).toContainText(/read-only/);
+});
+
+test("the wallet panel shows tabs, the receive QR, and locks top-up for EVM", async ({ page }) => {
+  await installMockMetaMask(page);
+  await page.goto("/");
+  const panel = page.getByRole("region", { name: "Wallet" });
+  await panel.getByRole("button", { name: "Connect MetaMask" }).click();
+  await expect(panel.getByText("MetaMask", { exact: true })).toBeVisible();
+  await expect(panel.getByRole("tab", { name: "Top up" })).toBeDisabled();
+
+  await panel.getByRole("tab", { name: "Receive" }).click();
+  await expect(panel.getByRole("img", { name: "Your receiving address" })).toBeVisible();
+  await expect(panel.locator(".address-full")).toHaveText(mockEvmAccount);
+
+  await panel.getByRole("tab", { name: "Request" }).click();
+  await expect(panel.getByRole("button", { name: "Create payment link" })).toBeVisible();
 });
 
 test("a payment request page shows the QR code and pay button", async ({ page }) => {
@@ -94,9 +110,9 @@ test("activity pages accept EVM and Solana addresses", async ({ page }) => {
 test("a connected MetaMask wallet can be disconnected", async ({ page }) => {
   await installMockMetaMask(page);
   await page.goto("/");
-  await page.getByRole("button", { name: "Connect MetaMask" }).click();
+  await page.getByRole("banner").getByRole("button", { name: "Connect MetaMask" }).click();
   await page.getByRole("button", { name: "Disconnect MetaMask" }).click();
-  await expect(page.getByRole("button", { name: "Connect MetaMask" })).toBeVisible();
+  await expect(page.getByRole("banner").getByRole("button", { name: "Connect MetaMask" })).toBeVisible();
 });
 
 test("responses carry security headers", async ({ request }) => {

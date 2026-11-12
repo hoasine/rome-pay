@@ -68,11 +68,11 @@ export function SiteHeader() {
           Denarius
         </Link>
         <nav className="nav" aria-label="Primary navigation">
-          <Link href="/#send">Send</Link>
-          <Link href="/#request">Request</Link>
+          <Link href="/">Wallet</Link>
           {wallet.activeAddress && (
-            <Link href={`/activity/${wallet.activeAddress}`}>My activity</Link>
+            <Link href={`/activity/${wallet.activeAddress}`}>Activity</Link>
           )}
+          <Link href="/#how-it-works">How it works</Link>
           <a href="https://docs.rome.builders" target="_blank" rel="noreferrer">
             Rome docs
           </a>
