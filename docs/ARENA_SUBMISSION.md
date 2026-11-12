@@ -40,7 +40,7 @@ Rome lets a Solana wallet control an EVM address derived from its public key and
 
 ## Links
 
-- Website: `ADD_APP_URL`
+- Website: `https://rome-denarius.vercel.app`
 - GitHub: `https://github.com/hoasine/rome-denarius`
 - X: `https://x.com/HoaTranRom`
 - Contract: `ADD_CONTRACT_ADDRESS`
